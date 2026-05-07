@@ -1,0 +1,46 @@
+<meta>
+    <info author="Nikolay Gerasimov" type="script" version="1.0.0" name="LOGIN-PANEL" />
+
+    <min_mta_version client="1.6.0" server="1.6.0" />
+
+    <script src="client.lua" type="client" cache="false"/>
+
+	<file src="html/select-skins.html" />
+    <file src="html/select-skins.css" />
+
+    <file src="html/regestrations.html" />
+    <file src="html/regestrations.css" />
+
+    <file src="html/panel.js" />
+
+    <file src="html/nikname-code.html" />
+    <file src="html/nikname-code.css" />
+
+    <file src="html/icon/h-sex.png" />
+    <file src="html/icon/m-sex.png" />
+
+    <file src="html/icon/h-sex-on.png" />
+    <file src="html/icon/m-sex-on.png" />
+
+    <file src="html/img/Vector.png" />
+
+    <file src="html/skins/1.png" />
+    <file src="html/skins/2.png" />
+    <file src="html/skins/3.png" />
+    <file src="html/skins/4.png" />
+    <file src="html/skins/5.png" />
+    <file src="html/skins/6.png" />
+    <file src="html/skins/7.png" />
+    <file src="html/skins/8.png" />
+    <file src="html/skins/9.png" />
+
+    <file src="html/skins/H/1.png" />
+    <file src="html/skins/H/2.png" />
+    <file src="html/skins/H/3.png" />
+    <file src="html/skins/H/4.png" />
+    <file src="html/skins/H/5.png" />
+    <file src="html/skins/H/6.png" />
+    <file src="html/skins/H/7.png" />
+    <file src="html/skins/H/8.png" />
+    <file src="html/skins/H/9.png" />
+</meta>

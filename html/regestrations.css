@@ -1,0 +1,87 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6{
+    padding: 0;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, rgba(49, 49, 49, 0.00) 0%, rgba(49, 49, 49, 0.90) 100%);
+}
+
+.AccountText{
+    padding-left: 810px;
+    padding-top: 156px;
+    color: #FFF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 33px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+}
+.Welcome-Text{
+    padding-left: 810px;
+    padding-top: 8px;
+    color: #C7C7C7;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+}
+
+/* Full-width inputs */
+input{
+    text-align: left;
+    margin: 25px;
+    margin-left: 864px;
+    width: 425px;
+    border: none;
+    border-bottom: 1px solid #9C9C9C;
+    background-color: transparent;
+    outline: none;
+    font-family: Inter;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+input, select, textarea{
+    color: white;
+    background-color: transparent;
+    outline: none;
+}
+
+button {
+    margin-top: 52px;
+    margin-left: 864px;
+    width: 425px;
+    height: 44px;
+    border: none;
+    background-color: rgba(117, 115, 113, 100);
+    background: rgba(156, 156, 156, 0.30);
+
+    color: #5F5D59;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+}
+/* Add a hover effect for buttons */
+button:hover {
+    color: black;
+    background: #FFF;
+}
+button:focus,button:active {
+   outline: none !important;
+   box-shadow: none;
+}

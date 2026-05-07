@@ -1,0 +1,114 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6{
+    padding: 0;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, rgba(49, 49, 49, 0.80) 0%, rgba(49, 49, 49, 0.00) 77.08%);
+    transition-delay: 1s
+}
+
+.Select-Skins {
+    padding-left: 68px;
+    padding-top: 45px;
+    color: #FFF;
+    font-family: Inter;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+    margin-bottom: 30px;
+}
+
+button{
+
+    width: 250px;
+    height: 51px;
+    border: none;
+    background-color: rgba(117, 115, 113, 100);
+    background: rgba(65, 65, 65, 0.60);
+
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+    color: #FFF;
+    margin-bottom: 30px;
+}
+
+button:hover {
+    color: black;
+    background: #FFF;
+}
+
+.m-sex{
+    background-image: url(image/icon/m-sex.png);
+    background-repeat: no-repeat;
+    background-position: 54px center;
+}
+
+.h-sex{
+    background-image: url(image/icon/h-sex.png);
+    background-repeat: no-repeat;
+    background-position: 54px center;
+}
+
+.m-sex:hover{
+    background-image: url(image/icon/m-sex-on.png);
+    background-repeat: no-repeat;
+    background-position: 54px center;
+}
+
+.h-sex:hover{
+    background-image: url(image/icon/h-sex-on.png);
+    background-repeat: no-repeat;
+    background-position: 54px center;
+}
+
+.select-pers{
+    width: 218px;
+    padding-left: 68px;
+    display: grid;
+    grid-template-columns: 0fr 226px 0fr;
+}
+.skins{
+
+    width: 218px;
+    margin: 4px;
+    height: 100px;
+    filter: grayscale(100%); 
+    background: rgba(65, 65, 65, 0.60);
+}
+
+.skins:hover{
+    background: white;
+    filter: grayscale(0%); 
+}
+.skins:focus{
+    filter: grayscale(0%); 
+    background-color: white;
+}
+
+.next{
+margin-top: 52px;
+    margin-left: 69px;
+    width: 674px;
+    height: 46px;
+    flex-shrink: 0;
+    background: rgba(117, 117, 117, 0.60);
+}
+
+button:focus,button:active {
+    outline: none !important;
+    box-shadow: none;
+ }

@@ -1,0 +1,81 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6{
+    padding: 0;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.bg{
+    width: 577px;
+    height: 576px;
+    background: url(image/img/Vector.png);
+}
+.container{
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(90deg, rgba(84, 84, 80, 0.90) 0%, rgba(84, 84, 80, 0.00) 74.78%);
+}
+.text-bonus {
+    position: absolute;
+    top: 400px;
+    left: 68px;
+    color: #FFF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 42px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+}
+
+input{
+    position: absolute;
+    width: 427px;
+    height: 28px;
+    text-align: left;
+    left: 69px;
+    top: 490px;
+    border: none;
+    border-bottom: 1px solid #9C9C9C;
+    background-color: transparent;
+    outline: none;
+    font-family: Inter;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+input, select, textarea{
+    color: #757575;
+    background-color: transparent;
+    outline: none;
+}
+
+button {
+    left: 69px;
+    position: absolute;
+    width: 427px;
+    height: 46px;
+    flex-shrink: 0;
+    background: rgba(84, 84, 80, 0.70);
+
+    border: none;
+    color: #757575;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+}
+/* Add a hover effect for buttons */
+button:hover {
+    color: black;
+    background: #FFF;
+}
+button:focus,button:active {
+   outline: none !important;
+   box-shadow: none;
+}
