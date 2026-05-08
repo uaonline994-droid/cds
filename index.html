@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalyna UA | CEF Auth</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap');
+
+        :root {
+            --glass-bg: rgba(10, 12, 18, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-red: #e32636;
+            --accent-gold: #ffd700;
+            --text-main: #f5f6fa;
+            --text-muted: #a4b0be;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            /* Твій фон з гаражем (замінено dl=1 на raw=1 для прямого завантаження картинки) */
+            background: url('https://www.dropbox.com/scl/fi/7e30iicxht0nbyg2s6v6a/ChatGPT-Image-8-.-2026-.-12_55_38.png?rlkey=wmim7he9isswglwvhzjp3dsr2&st=pdw0bpxm&raw=1') no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Ефект затемнення поверхні гри під CEF */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* Основний скляний контейнер */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 420px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Заголовок проекту */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--accent-gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+        }
+
+        .auth-header p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Смуга прогресу реєстрації */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .progress-step {
+            width: 31%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px rgba(227, 38, 54, 0.5);
+        }
+
+        /* Екрани */
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Інпути */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--accent-red);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 12px rgba(227, 38, 54, 0.15);
+        }
+
+        /* Кнопки */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #b31b27 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(227, 38, 54, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(227, 38, 54, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Нижні посилання */
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .form-footer span {
+            color: var(--accent-gold);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Картки джерел інформації */
+        .sources-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .source-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .source-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--accent-gold);
+        }
+
+        .source-card.selected {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        /* Панель локального тесту */
+        #dev-panel {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-size: 11px;
+        }
+        #dev-panel button {
+            display: block; width: 100%; padding: 6px; margin-bottom: 5px;
+            background: #222; border: 1px solid #444; color: #fff; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div id="dev-panel">
+        <p style="color: var(--accent-gold); margin-bottom: 5px; font-weight: bold;">Тест інтерфейсу:</p>
+        <button onclick="setAuthMode(true)">Режим: Увійти</button>
+        <button onclick="setAuthMode(false)">Режим: Реєстрація</button>
+    </div>
+
+    <div class="auth-container">
+        
+        <div class="auth-header">
+            <h1>Kalyna UA</h1>
+            <p id="server-subtitle">Авторизація</p>
+        </div>
+
+        <div class="progress-bar" id="reg-progress" style="display: none;">
+            <div class="progress-step active" id="step-indicator-1"></div>
+            <div class="progress-step" id="step-indicator-2"></div>
+            <div class="progress-step" id="step-indicator-3"></div>
+        </div>
+
+        <div class="screen" id="screen-login">
+            <div class="input-group">
+                <label for="login-pass">Введіть ваш пароль</label>
+                <div class="input-wrapper">
+                    <input type="password" id="login-pass" placeholder="••••••••••••" autocomplete="off">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitLogin()">Увійти</button>
+            <div class="form-footer">
+                Немає акаунту? <span onclick="setAuthMode(false)">Створити</span>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-reg-pass">
+            <div class="input-group">
+                <label for="reg-pass">Придумайте пароль</label>
+                <div class="input-wrapper">
+                    <input type="password" id="reg-pass" placeholder="Мінімум 6 символів" autocomplete="off">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitRegStep1()">Далі</button>
+            <div class="form-footer">
+                Вже грали? <span onclick="setAuthMode(true)">Увійти</span>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-reg-email">
+            <div class="input-group">
+                <label for="reg-email">Електронна пошта</label>
+                <div class="input-wrapper">
+                    <input type="email" id="reg-email" placeholder="mail@example.com" autocomplete="off">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitRegStep2(false)">Далі</button>
+            <button class="btn btn-secondary" onclick="submitRegStep2(true)">Пропустити</button>
+        </div>
+
+        <div class="screen" id="screen-reg-source">
+            <div class="input-group">
+                <label style="margin-bottom: 12px;">Звідки ви дізналися про нас?</label>
+                <div class="sources-grid">
+                    <div class="source-card" onclick="selectSource(this, 'TikTok')">TikTok</div>
+                    <div class="source-card" onclick="selectSource(this, 'YouTube')">YouTube</div>
+                    <div class="source-card" onclick="selectSource(this, 'Friends')">Від друзів</div>
+                    <div class="source-card" onclick="selectSource(this, 'Monitoring')">Моніторинг</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="finishRegistration()">Завершити</button>
+        </div>
+
+    </div>
+
+    <audio id="audio-login" src="https://www.dropbox.com/scl/fi/eg52x66c3ofkwf2ay1ud6/ElevenLabs_2026-05-05T23_40_24_Ievgen-Diachenko_pvc_sp101_s38_sb23_v3.mp3?rlkey=s2mzb22sjb6znc1bs80zfglpx&st=gzmnpxaq&raw=1" preload="auto"></audio>
+    <audio id="audio-reg" src="https://www.dropbox.com/scl/fi/6tbdx41j8ur7h2jwzi0st/ElevenLabs_2026-05-05T23_34_04_Ievgen-Diachenko_pvc_sp101_s38_sb23_v3.mp3?rlkey=ynczxnhb30iqo6cjs4buuc8w0&st=958rg4fr&raw=1" preload="auto"></audio>
+    <audio id="audio-email" src="https://www.dropbox.com/scl/fi/bvmpqntxl648vyaiqz7wr/ElevenLabs_2026-05-05T23_37_58_Ievgen-Diachenko_pvc_sp101_s38_sb23_v3.mp3?rlkey=wqxn3esbnf3u4cngnc0o3qevk&st=zc09ija3&raw=1" preload="auto"></audio>
+
+    <script>
+        let regData = { password: "", email: "", source: "" };
+        let isRegistered = true;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof cef !== 'undefined') {
+                document.getElementById('dev-panel').style.display = 'none';
+            }
+            // Старт системи: починаємо з логіну
+            setAuthMode(true);
+        });
+
+        // Керування аудіодоріжками залежно від активного екрану
+        function playScreenSound(screenId) {
+            // Зупиняємо абсолютно всі звуки перед увімкненням нового
+            document.getElementById('audio-login').pause();
+            document.getElementById('audio-login').currentTime = 0;
+            document.getElementById('audio-reg').pause();
+            document.getElementById('audio-reg').currentTime = 0;
+            document.getElementById('audio-email').pause();
+            document.getElementById('audio-email').currentTime = 0;
+
+            try {
+                if (screenId === 'screen-login') {
+                    document.getElementById('audio-login').play().catch(e => console.log("Браузер заблокував автоплей: потрібен клік"));
+                } else if (screenId === 'screen-reg-pass') {
+                    document.getElementById('audio-reg').play().catch(e => console.log("Браузер заблокував автоплей"));
+                } else if (screenId === 'screen-reg-email') {
+                    document.getElementById('audio-email').play().catch(e => console.log("Браузер заблокував автоплей"));
+                }
+            } catch (err) {
+                console.error("Помилка відтворення звуку:", err);
+            }
+        }
+
+        function switchScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => {
+                s.classList.remove('active');
+                setTimeout(() => { s.style.display = 'none'; }, 150);
+            });
+
+            const activeScreen = document.getElementById(screenId);
+            setTimeout(() => {
+                activeScreen.style.display = 'block';
+                setTimeout(() => {
+                    activeScreen.classList.add('active');
+                    playScreenSound(screenId); // Запускаємо звук під екран
+                }, 50);
+            }, 150);
+        }
+
+        function setAuthMode(registered) {
+            isRegistered = registered;
+            const subtitle = document.getElementById('server-subtitle');
+            const progress = document.getElementById('reg-progress');
+
+            if (registered) {
+                subtitle.innerText = "Авторизація";
+                progress.style.display = 'none';
+                switchScreen('screen-login');
+            } else {
+                subtitle.innerText = "Реєстрація";
+                progress.style.display = 'flex';
+                updateProgress(1);
+                switchScreen('screen-reg-pass');
+            }
+        }
+
+        function updateProgress(step) {
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                if (i <= step) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            }
+        }
+
+        function submitLogin() {
+            const password = document.getElementById('login-pass').value;
+            if (password.length < 4) {
+                alert("Пароль занадто короткий!");
+                return;
+            }
+            sendDataToSAMP("auth:onLogin", { password: password });
+        }
+
+        function submitRegStep1() {
+            const password = document.getElementById('reg-pass').value;
+            if (password.length < 6) {
+                alert("Пароль має бути не менше 6 символів!");
+                return;
+            }
+            regData.password = password;
+            updateProgress(2);
+            switchScreen('screen-reg-email');
+        }
+
+        function submitRegStep2(skip = false) {
+            if (!skip) {
+                const email = document.getElementById('reg-email').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert("Введіть коректний E-mail або натисніть 'Пропустити'");
+                    return;
+                }
+                regData.email = email;
+            } else {
+                regData.email = "None";
+            }
+            updateProgress(3);
+            switchScreen('screen-reg-source');
+        }
+
+        function selectSource(element, sourceName) {
+            const cards = document.querySelectorAll('.source-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            regData.source = sourceName;
+        }
+
+        function finishRegistration() {
+            if (!regData.source) {
+                alert("Будь ласка, оберіть один варіант!");
+                return;
+            }
+            sendDataToSAMP("auth:onRegister", regData);
+        }
+
+        function sendDataToSAMP(eventName, data) {
+            if (typeof cef !== 'undefined') {
+                cef.emit(eventName, JSON.stringify(data));
+            } else {
+                console.log(`[DEV EMIT] Назва події: ${eventName} | Дані:`, data);
+                alert(`Сервер отримав дані: ${JSON.stringify(data)}`);
+            }
+        }
+
+        // Обробка відповідей з серверної сторони (Pawn)
+        if (typeof cef !== 'undefined') {
+            cef.on("auth:showScreen", (registered) => {
+                setAuthMode(registered);
+            });
+            cef.on("auth:showError", (errorText) => {
+                alert(errorText);
+            });
+        }
+    </script>
+</body>
+</html>
