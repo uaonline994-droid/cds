@@ -32,7 +32,7 @@
             justify-content: center;
             align-items: center;
             color: var(--text-main);
-            /* Твій фон з гаражем (замінено dl=1 на raw=1 для прямого завантаження картинки) */
+            /* Твій фон з гаражем */
             background: url('https://www.dropbox.com/scl/fi/7e30iicxht0nbyg2s6v6a/ChatGPT-Image-8-.-2026-.-12_55_38.png?rlkey=wmim7he9isswglwvhzjp3dsr2&st=pdw0bpxm&raw=1') no-repeat center center;
             background-size: cover;
         }
@@ -66,7 +66,7 @@
         /* Заголовок проекту */
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .auth-header h1 {
@@ -84,6 +84,20 @@
             margin-top: 6px;
             letter-spacing: 2px;
             text-transform: uppercase;
+        }
+
+        /* Панель для привітального тексту від сервера */
+        .welcome-text {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-main);
+            text-align: center;
+            font-weight: 400;
         }
 
         /* Смуга прогресу реєстрації */
@@ -263,6 +277,9 @@
         <div class="auth-header">
             <h1>Kalyna UA</h1>
             <p id="server-subtitle">Авторизація</p>
+            <div id="welcome-message" class="welcome-text">
+                Вітаємо на сервері Kalyna UA 01! Введіть, будь ласка, свій пароль або зареєструйтесь.
+            </div>
         </div>
 
         <div class="progress-bar" id="reg-progress" style="display: none;">
@@ -333,7 +350,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof cef !== 'undefined') {
-                document.getElementById('dev-panel').style.display = 'none';
+                const devPanel = document.getElementById('dev-panel');
+                if(devPanel) devPanel.style.display = 'none';
             }
             // Старт системи: починаємо з логіну
             setAuthMode(true);
@@ -341,7 +359,6 @@
 
         // Керування аудіодоріжками залежно від активного екрану
         function playScreenSound(screenId) {
-            // Зупиняємо абсолютно всі звуки перед увімкненням нового
             document.getElementById('audio-login').pause();
             document.getElementById('audio-login').currentTime = 0;
             document.getElementById('audio-reg').pause();
@@ -374,7 +391,7 @@
                 activeScreen.style.display = 'block';
                 setTimeout(() => {
                     activeScreen.classList.add('active');
-                    playScreenSound(screenId); // Запускаємо звук під екран
+                    playScreenSound(screenId); 
                 }, 50);
             }, 150);
         }
@@ -383,13 +400,16 @@
             isRegistered = registered;
             const subtitle = document.getElementById('server-subtitle');
             const progress = document.getElementById('reg-progress');
+            const welcomeText = document.getElementById('welcome-message');
 
             if (registered) {
                 subtitle.innerText = "Авторизація";
+                welcomeText.style.display = 'block'; // Показуємо привітання при логіні
                 progress.style.display = 'none';
                 switchScreen('screen-login');
             } else {
                 subtitle.innerText = "Реєстрація";
+                welcomeText.style.display = 'none'; // Приховуємо привітання під час реєстрації
                 progress.style.display = 'flex';
                 updateProgress(1);
                 switchScreen('screen-reg-pass');
@@ -413,7 +433,14 @@
                 alert("Пароль занадто короткий!");
                 return;
             }
-            sendDataToSAMP("auth:onLogin", { password: password });
+            
+            // Оновлений виклик функції для SAMP мода (як вказано у вашому запиті)
+            if (typeof cef !== 'undefined') {
+                cef.emit("OnAuthSubmit", password);
+            } else {
+                console.log(`[DEV EMIT] OnAuthSubmit викликано з паролем:`, password);
+                alert(`SAMP сервер отримав пароль для входу: ${password}`);
+            }
         }
 
         function submitRegStep1() {
@@ -455,25 +482,34 @@
                 alert("Будь ласка, оберіть один варіант!");
                 return;
             }
-            sendDataToSAMP("auth:onRegister", regData);
-        }
-
-        function sendDataToSAMP(eventName, data) {
+            // Для реєстрації залишаємо відправку всіх зібраних даних
             if (typeof cef !== 'undefined') {
-                cef.emit(eventName, JSON.stringify(data));
+                cef.emit("auth:onRegister", JSON.stringify(regData));
             } else {
-                console.log(`[DEV EMIT] Назва події: ${eventName} | Дані:`, data);
-                alert(`Сервер отримав дані: ${JSON.stringify(data)}`);
+                console.log(`[DEV EMIT] auth:onRegister:`, regData);
+                alert(`Сервер отримав дані реєстрації: ${JSON.stringify(regData)}`);
             }
         }
 
         // Обробка відповідей з серверної сторони (Pawn)
         if (typeof cef !== 'undefined') {
+            
+            // Існуючі обробники
             cef.on("auth:showScreen", (registered) => {
                 setAuthMode(registered);
             });
+            
             cef.on("auth:showError", (errorText) => {
                 alert(errorText);
+            });
+            
+            // НОВИЙ обробник: Динамічна зміна тексту привітання з боку Pawn
+            // Виклик у Pawn: cef_emit_event(playerid, "auth:setWelcomeText", CEF_STRING, "Свій текст");
+            cef.on("auth:setWelcomeText", (text) => {
+                const welcomeElement = document.getElementById('welcome-message');
+                if(welcomeElement) {
+                    welcomeElement.innerText = text;
+                }
             });
         }
     </script>
